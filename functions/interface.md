@@ -1,6 +1,6 @@
 # Functions over 10 lines · interface
 
-Built 2026-09-15T19:15:07Z from the block register generated 2026-09-15T18:28:26.149Z (sha256 `d356562b2e8f`) and the numbered database of 250,174 lines. Keys are the estate's permanent keys; none is invented. See catalogue/provenance.json.
+Built 2026-09-15T19:18:47Z from the block register generated 2026-09-15T18:28:26.149Z (sha256 `d356562b2e8f`) and the numbered database of 250,174 lines. Keys are the estate's permanent keys; none is invented. See catalogue/provenance.json.
 
 156 functions.
 

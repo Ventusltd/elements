@@ -15,9 +15,9 @@ field fail.
 It does not prove the sources are right, that descriptions are complete, or that a
 function runs.
 
-Before the real catalogue may pass, eleven deliberately broken copies must each
-fail, among them the kinds of corruption a peer review showed the earlier
-seven-check version let through.
+Before the real catalogue may pass, twenty deliberately broken copies must each
+fail, including every corruption a peer review showed the earlier seven-check
+version let through.
 """
 import copy, hashlib, json, struct, sys, urllib.request
 from collections import defaultdict
@@ -83,10 +83,15 @@ def problems(cat, prov, exp, keyset):
     got_apps = [a["key"] for a in cat["apps"]]
     if sorted(got_apps) != exp_apps:
         bad.append(f"apps are {sorted(got_apps)}, register kind app gives {exp_apps}")
+    for a in cat["apps"]:
+        if a != got_e.get(a["key"]):
+            bad.append(f"app {a['key']} differs from its element entry")
     got_s = {s["key"]: sorted(s["blocks"]) for s in cat["surfaces"]}
     if got_s != exp_s:
         bad.append(f"surfaces differ: {len(set(got_s) - set(exp_s))} extra, {len(set(exp_s) - set(got_s))} missing, or blocks changed")
-    c = prov["counts"]
+    c = dict(prov["counts"])
+    if "_apps_count" in cat:   # a mutated copy whose provenance app count was raised to match
+        c["apps"] = cat["_apps_count"]
     if (c["elements"], c["apps"], c["surfaces"], c["functions_over_10_lines"]) != \
             (len(cat["elements"]), len(cat["apps"]), len(cat["surfaces"]), len(cat["functions"])):
         bad.append("provenance counts differ from the catalogue")
@@ -124,6 +129,16 @@ def main():
         ("duplicate app with matching tally", lambda c: c["apps"].__setitem__(1, c["apps"][0])),
         ("function dropped with matching tally", lambda c: (c["functions"].pop(), None)),
         ("element description changed", lambda c: c["elements"][0].__setitem__("description", "invented")),
+        # the exact cases a peer review found passing the earlier seven checks
+        ("a foreign but issued first key", lambda c: c["functions"][0].__setitem__("first_line", "line:342795")),
+        ("a false last key", lambda c: c["functions"][0].__setitem__("last_line", "line:27")),
+        ("occurrences inflated", lambda c: c["functions"][0].__setitem__("lines", c["functions"][0]["lines"] + 100)),
+        ("first key with a fake namespace", lambda c: c["functions"][0].__setitem__("first_line", "fake:" + c["functions"][0]["first_line"][5:])),
+        ("function points at an unknown block", lambda c: c["functions"][0].__setitem__("block", "block:NOPE")),
+        ("element lists family:0", lambda c: c["elements"][0].__setitem__("function_keys", ["family:0"])),
+        ("surface key replaced by an unrelated URL", lambda c: c["surfaces"][0].__setitem__("key", "surface:https://example.test/other/")),
+        ("invented app prose", lambda c: c["apps"][0].__setitem__("description", "invented prose")),
+        ("duplicate app with provenance count raised to match", lambda c: (c["apps"].append(c["apps"][0]), c.__setitem__("_apps_count", len(c["apps"])))),
     ]
     for name, mutate in mutations:
         broken = copy.deepcopy(cat)

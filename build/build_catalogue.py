@@ -125,7 +125,7 @@ def main() -> int:
         })
 
     # ── elements: every register block ────────────────────────────────────────
-    pack_max = max(f["n"] for f in families)
+    pack_ids = {f["n"] for f in families}   # membership, not "above the highest": a gap in the numbering is also absent
     elements = []
     for b in blocks:
         inside = b.get("inside") or []
@@ -135,7 +135,7 @@ def main() -> int:
             "kind": b["kind"], "category": b["category"], "category_title": cat_title.get(b["category"], b["category"]),
             "state": b.get("state"), "functions_inside": len(inside),
             "function_keys": [f"family:{fn['family']}" for fn in inside],
-            "functions_not_in_numbered_database": [f"family:{fn['family']}" for fn in inside if fn["family"] > pack_max],
+            "functions_not_in_numbered_database": [f"family:{fn['family']}" for fn in inside if fn["family"] not in pack_ids],
             "repos": b.get("repos") or [], "live": b.get("live") or [],
             "files": [{"repo": f["repo"], "path": f["path"], "commit": f.get("commit")} for f in b.get("files") or []],
             "first_written": b.get("first_written"),
@@ -145,6 +145,11 @@ def main() -> int:
     apps = [e for e in elements if e["kind"] == "app"]
 
     # ── surfaces: the folders of the live addresses the register records ──────
+    # Identity rule, version 1, kept exactly as first published: the address text up to
+    # its last "/", plus "/". It is not URL parsing: an address with no path, or with a
+    # query or fragment containing "/", would give a wrong folder. None of the register's
+    # addresses do today. A parsed-URL rule would be a new, versioned identity that keeps
+    # these keys as aliases; it is not changed silently here.
     surf = defaultdict(list)
     for b in blocks:
         for u in b.get("live") or []:

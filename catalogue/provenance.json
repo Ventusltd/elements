@@ -1,5 +1,5 @@
 {
- "built_utc": "2026-09-15T19:15:07Z",
+ "built_utc": "2026-09-15T19:18:47Z",
  "rule": {
   "elements": "every block of the live register",
   "apps": "register blocks whose kind is app",

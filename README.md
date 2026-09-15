@@ -22,4 +22,4 @@ Titles and descriptions are the sources' own words. Where a source has none, the
 
 - Rebuild with `python build/build_catalogue.py`. Add `--register inputs/<file>` to rebuild from a committed register copy.
 
-Check with `python tests/check_catalogue.py`. It recomputes every field of every entry independently from the pinned inputs, and fails on any missing, extra or changed entry. Before the real catalogue may pass, 11 deliberately broken copies must each fail. It does not prove that the sources are right, that descriptions are complete, or that a function runs. Inputs are pinned by sha256 in `catalogue/provenance.json`.
+Check with `python tests/check_catalogue.py`. It recomputes every field of every entry independently from the pinned inputs, and fails on any missing, extra or changed entry. Before the real catalogue may pass, 20 deliberately broken copies must each fail. It does not prove that the sources are right, that descriptions are complete, or that a function runs. Inputs are pinned by sha256 in `catalogue/provenance.json`.
