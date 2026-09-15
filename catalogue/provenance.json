@@ -1,0 +1,53 @@
+{
+ "built_utc": "2026-09-15T19:01:52Z",
+ "rule": {
+  "elements": "every block of the live register",
+  "apps": "register blocks whose kind is app",
+  "functions": "families of the numbered database with more than 10 numbered lines",
+  "surfaces": "folders of the live addresses the register records"
+ },
+ "register": {
+  "url": "https://ventusltd.github.io/stars/blocks/blocks.json",
+  "generated_utc": "2026-09-15T18:28:26.149Z",
+  "sha256": "d356562b2e8f0312c98531699dc70293c89630d5a7771cd1876eb35450a3295f",
+  "bytes": 403894,
+  "copy": "inputs/blocks-2026-09-15T182826149Z.json"
+ },
+ "numbered_database": [
+  {
+   "url": "https://globalgrid2050.com/testcode/202609142202/data/all-lines.meta.json",
+   "sha256": "ca2b6af2539c43fb93ac4d7e7d834b6c38b51779b81ce1975782edd78520556a",
+   "bytes": 812
+  },
+  {
+   "url": "https://globalgrid2050.com/testcode/202609142202/data/all-lines.bin",
+   "sha256": "8291d2680e43506fd5bda23428bc9906458ed38413fc2c206d32c4b9952b2762",
+   "bytes": 1000696
+  },
+  {
+   "url": "https://globalgrid2050.com/testcode/202609142202/data/families.json",
+   "sha256": "f055ef68089db83b0d7d3016b8dd704df46d6f24d377d43d6ec2f8b8d59dda54",
+   "bytes": 2221286
+  },
+  {
+   "url": "https://globalgrid2050.com/testcode/202609142202/data/lines.bin",
+   "sha256": "5a0c36595ccddfff5852fae262a3b69885d94981c83e683e0b4d9c0c7012c83a",
+   "bytes": 2659760
+  }
+ ],
+ "lines_source": {
+  "url": "https://ventusltd.github.io/stars/LINES.md",
+  "bytes": 22142736,
+  "sha256": "406c929e76e0ae79853fe486b8f4de328268648ee1e9bfe737b6d2855fc30abb",
+  "header": "250,174 unique lines, numbered 1 to 342,795. Generated 2026-09-14T19:56:58.242Z by the modular star from the numbered database (modular.sqlite on the modular-star release). The number is the line's permanent key: it never changes and is never reused. Numbers missing from the sequence were never issu"
+ },
+ "counts": {
+  "elements": 244,
+  "apps": 7,
+  "surfaces": 97,
+  "families_total": 10985,
+  "functions_over_10_lines": 5720,
+  "numbered_lines": 250174,
+  "highest_line_key": 342795
+ }
+}

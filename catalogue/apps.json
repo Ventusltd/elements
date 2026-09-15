@@ -1,0 +1,889 @@
+[
+ {
+  "key": "block:Ra",
+  "number": 49,
+  "symbol": "Ra",
+  "title": "REPD Grid Atlas core engine (v3 to v8)",
+  "description": "The earlier all-in-one map engine that the cartridges replaced: layers, popups, radius tools and the substation curtain in one file. Kept as the ancestor of the current parts.",
+  "kind": "app",
+  "category": "cartridges",
+  "category_title": "Map cartridges",
+  "state": null,
+  "functions_inside": 24,
+  "function_keys": [
+   "family:5190",
+   "family:5319",
+   "family:5320",
+   "family:5534",
+   "family:5681",
+   "family:5321",
+   "family:5322",
+   "family:5330",
+   "family:5343",
+   "family:5344",
+   "family:5347",
+   "family:5544",
+   "family:5565",
+   "family:5594",
+   "family:5185",
+   "family:5224",
+   "family:5372",
+   "family:5411",
+   "family:5921",
+   "family:5527",
+   "family:5528",
+   "family:5529",
+   "family:5530",
+   "family:5533"
+  ],
+  "functions_not_in_numbered_database": [],
+  "repos": [
+   "Ventusltd/code-generator",
+   "Ventusltd/globalgrid2050",
+   "Ventusltd/gridatlas",
+   "Ventusltd/youengineer-code-review"
+  ],
+  "live": [
+   "https://globalgrid2050.com/repd_grid_atlasv3/index.html",
+   "https://globalgrid2050.com/repd_grid_atlasv4/index.html",
+   "https://globalgrid2050.com/repd_grid_atlasv6/ventus-corev6engine.js",
+   "https://globalgrid2050.com/ventus-core.js"
+  ],
+  "files": [
+   {
+    "repo": "Ventusltd/code-generator",
+    "path": "apps/substation-finder/Si/index.html",
+    "commit": "857ea81244848b1da8fe21fffaed74cab568a3b4"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "repd_grid_atlasv3/index.html",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "repd_grid_atlasv4/index.html",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/code-generator",
+    "path": "apps/substation-finder/Si/ventus-core.js",
+    "commit": "857ea81244848b1da8fe21fffaed74cab568a3b4"
+   },
+   {
+    "repo": "Ventusltd/code-generator",
+    "path": "apps/substation-finder/Si/ventus-corev6engine.js",
+    "commit": "857ea81244848b1da8fe21fffaed74cab568a3b4"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "repd_grid_atlasv6/ventus-corev6engine.js",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "ventus-core.js",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "repd_grid_atlasv6/scripts/fetch_11kv_ukpnv6.py",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   }
+  ],
+  "first_written": "2026-03-23T09:30:02Z",
+  "depends_on": [
+   "block:St",
+   "block:Tp",
+   "block:Pr",
+   "block:Gn",
+   "block:Ss",
+   "block:Wf",
+   "block:Si"
+  ],
+  "used_by": [
+   "block:Cg"
+  ]
+ },
+ {
+  "key": "block:Cg",
+  "number": 50,
+  "symbol": "Cg",
+  "title": "Cable trench geometry",
+  "description": "Lays cables out in a trench: spacing, burial depth, group geometry and the drawing of it.",
+  "kind": "app",
+  "category": "solar",
+  "category_title": "Solar, BESS and cables",
+  "state": null,
+  "functions_inside": 24,
+  "function_keys": [
+   "family:1",
+   "family:2",
+   "family:3",
+   "family:7",
+   "family:8",
+   "family:9",
+   "family:12",
+   "family:13",
+   "family:14",
+   "family:15",
+   "family:16",
+   "family:17",
+   "family:18",
+   "family:22",
+   "family:25",
+   "family:32",
+   "family:33",
+   "family:36",
+   "family:37",
+   "family:38",
+   "family:4",
+   "family:6",
+   "family:10",
+   "family:11"
+  ],
+  "functions_not_in_numbered_database": [],
+  "repos": [
+   "Ventusltd/cable-trench-or-drill",
+   "Ventusltd/layout-tool",
+   "Ventusltd/globalgrid2050",
+   "Ventusltd/testcode"
+  ],
+  "live": [
+   "https://globalgrid2050.com/solar-bess-topology-v5/cable-geometry-visualiser-v5.html",
+   "https://globalgrid2050.com/solar-bess-topology-v6/cable-geometry-visualiser/calculations.js",
+   "https://globalgrid2050.com/solar-bess-topology-v7/cable-geometry-visualiser/calculations.js",
+   "https://globalgrid2050.com/solar-bess-topology/index.html"
+  ],
+  "files": [
+   {
+    "repo": "Ventusltd/cable-trench-or-drill",
+    "path": "releases/202609052001/solar-bess-topology-v7/cable-geometry-visualiser/calculations.js",
+    "commit": "958449237b6f498677025a0e274709bc147f43f4"
+   },
+   {
+    "repo": "Ventusltd/layout-tool",
+    "path": "releases/202609051858/solar-bess-topology-v7/cable-geometry-visualiser/calculations.js",
+    "commit": "5c450e27e430d6eb5d80070f794a5660f30015a1"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v5/cable-geometry-visualiser-v5.html",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v6/cable-geometry-visualiser/calculations.js",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v7/cable-geometry-visualiser/calculations.js",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology/index.html",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "testcode/202609052023/layer-apps/solar-bess-topology-v7/cable-geometry-visualiser/calculations.js",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/testcode",
+    "path": "sandbox/202609052028/layer-apps/solar-bess-topology-v7/cable-geometry-visualiser/calculations.js",
+    "commit": "faf10060dc4a15b95c32dc131e48372beecf21b2"
+   }
+  ],
+  "first_written": "2026-04-08T22:49:36+01:00",
+  "depends_on": [
+   "block:Pr",
+   "block:Si",
+   "block:Ra",
+   "block:Pn",
+   "block:Ss",
+   "block:Dt",
+   "block:Wf",
+   "block:Gn",
+   "block:Dc",
+   "block:St",
+   "block:Ps",
+   "block:Sb",
+   "block:Gp",
+   "block:Tp",
+   "block:Sa"
+  ],
+  "used_by": [
+   "block:Sp",
+   "block:Sb",
+   "block:x839",
+   "block:x860"
+  ]
+ },
+ {
+  "key": "block:Sb",
+  "number": 51,
+  "symbol": "Sb",
+  "title": "Solar and BESS single-line sandbox",
+  "description": "Design a solar or battery site on the map with its single-line diagram, logistics presets and financial view.",
+  "kind": "app",
+  "category": "solar",
+  "category_title": "Solar, BESS and cables",
+  "state": null,
+  "functions_inside": 24,
+  "function_keys": [
+   "family:7385",
+   "family:7387",
+   "family:7388",
+   "family:7389",
+   "family:7390",
+   "family:7391",
+   "family:7396",
+   "family:7399",
+   "family:7402",
+   "family:7403",
+   "family:7404",
+   "family:7407",
+   "family:7411",
+   "family:7412",
+   "family:7415",
+   "family:7416",
+   "family:7417",
+   "family:7419",
+   "family:7420",
+   "family:7434",
+   "family:7435",
+   "family:7436",
+   "family:7438",
+   "family:7482"
+  ],
+  "functions_not_in_numbered_database": [],
+  "repos": [
+   "Ventusltd/globalgrid2050",
+   "Ventusltd/testcode",
+   "Ventusltd/layout-tool"
+  ],
+  "live": [
+   "https://globalgrid2050.com/scripts/upgrade_v5_skid_mva_controls.py",
+   "https://globalgrid2050.com/solar-bess-topology-v5/install_geometry_visualiser_migration_v5.py",
+   "https://globalgrid2050.com/solar-bess-topology-v6/tools/legacy-v5-installers/install_geometry_visualiser_migration_v5.py",
+   "https://globalgrid2050.com/solar-bess-topology-v7/tools/legacy-v5-installers/install_geometry_visualiser_migration_v5.py"
+  ],
+  "files": [
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "scripts/upgrade_v5_skid_mva_controls.py",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v5/install_geometry_visualiser_migration_v5.py",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v6/tools/legacy-v5-installers/install_geometry_visualiser_migration_v5.py",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v7/tools/legacy-v5-installers/install_geometry_visualiser_migration_v5.py",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v2/indexforgis-sld-v2.html",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v3/gis-sld-v3-map.js",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v4/gis-sld-v4-map.js",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "solar-bess-topology-v5/gis-sld-v4-map.js",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   }
+  ],
+  "first_written": "2026-04-09T19:38:18+01:00",
+  "depends_on": [
+   "block:St",
+   "block:Tp",
+   "block:Pr",
+   "block:Gn",
+   "block:Ss",
+   "block:Wf",
+   "block:Cg",
+   "block:Pn"
+  ],
+  "used_by": [
+   "block:Cg",
+   "block:x117",
+   "block:x702",
+   "block:x703",
+   "block:x705",
+   "block:x706",
+   "block:x710",
+   "block:x711",
+   "block:x939"
+  ]
+ },
+ {
+  "key": "block:St",
+  "number": 52,
+  "symbol": "St",
+  "title": "Solar electrical topology (text engine)",
+  "description": "The text-based calculator for solar electrical topology: strings, inverters, transformers.",
+  "kind": "app",
+  "category": "solar",
+  "category_title": "Solar, BESS and cables",
+  "state": null,
+  "functions_inside": 24,
+  "function_keys": [
+   "family:77209",
+   "family:76473",
+   "family:76523",
+   "family:76565",
+   "family:76585",
+   "family:76990",
+   "family:77453",
+   "family:77454",
+   "family:77455",
+   "family:77456",
+   "family:77515",
+   "family:77606",
+   "family:76405",
+   "family:76406",
+   "family:76407",
+   "family:76408",
+   "family:76410",
+   "family:76411",
+   "family:76412",
+   "family:76413",
+   "family:76414",
+   "family:76415",
+   "family:76416",
+   "family:76417"
+  ],
+  "functions_not_in_numbered_database": [],
+  "repos": [
+   "Ventusltd/solar-electrical-topology-analysis-engine-text-based"
+  ],
+  "live": [
+   "https://ventusltd.github.io/solar-electrical-topology-analysis-engine-text-based/b9-sandbox/app.js",
+   "https://ventusltd.github.io/solar-electrical-topology-analysis-engine-text-based/b9-sandbox/cartridges.js",
+   "https://ventusltd.github.io/solar-electrical-topology-analysis-engine-text-based/b9-sandbox/model.js",
+   "https://ventusltd.github.io/solar-electrical-topology-analysis-engine-text-based/b9-sandbox/tests.js"
+  ],
+  "files": [
+   {
+    "repo": "Ventusltd/solar-electrical-topology-analysis-engine-text-based",
+    "path": "b9-sandbox/app.js",
+    "commit": "d3b4c497144c2c9b3e8f0e82117e7e9abe4672b9"
+   },
+   {
+    "repo": "Ventusltd/solar-electrical-topology-analysis-engine-text-based",
+    "path": "b9-sandbox/cartridges.js",
+    "commit": "d3b4c497144c2c9b3e8f0e82117e7e9abe4672b9"
+   },
+   {
+    "repo": "Ventusltd/solar-electrical-topology-analysis-engine-text-based",
+    "path": "b9-sandbox/model.js",
+    "commit": "d3b4c497144c2c9b3e8f0e82117e7e9abe4672b9"
+   },
+   {
+    "repo": "Ventusltd/solar-electrical-topology-analysis-engine-text-based",
+    "path": "b9-sandbox/tests.js",
+    "commit": "d3b4c497144c2c9b3e8f0e82117e7e9abe4672b9"
+   },
+   {
+    "repo": "Ventusltd/solar-electrical-topology-analysis-engine-text-based",
+    "path": "navigation-buttons.js",
+    "commit": "d3b4c497144c2c9b3e8f0e82117e7e9abe4672b9"
+   },
+   {
+    "repo": "Ventusltd/solar-electrical-topology-analysis-engine-text-based",
+    "path": "physics.generated.js",
+    "commit": "d3b4c497144c2c9b3e8f0e82117e7e9abe4672b9"
+   },
+   {
+    "repo": "Ventusltd/solar-electrical-topology-analysis-engine-text-based",
+    "path": "restore-points/2026-07-29-before-24-string-v10/index.html",
+    "commit": "d3b4c497144c2c9b3e8f0e82117e7e9abe4672b9"
+   },
+   {
+    "repo": "Ventusltd/solar-electrical-topology-analysis-engine-text-based",
+    "path": "restore_points/2026-07-27-v8-leapfrog/index-v7-before-leapfrog.html",
+    "commit": "d3b4c497144c2c9b3e8f0e82117e7e9abe4672b9"
+   }
+  ],
+  "first_written": "2026-04-07T04:09:11+01:00",
+  "depends_on": [
+   "block:Si",
+   "block:Tp",
+   "block:Sp",
+   "block:Dt",
+   "block:Pn",
+   "block:Em"
+  ],
+  "used_by": [
+   "block:Ug",
+   "block:Ss",
+   "block:Si",
+   "block:Dt",
+   "block:Ra",
+   "block:Cg",
+   "block:Sb",
+   "block:Pn",
+   "block:Wf",
+   "block:Ln",
+   "block:Em",
+   "block:Sa",
+   "block:Gn",
+   "block:x117",
+   "block:x341",
+   "block:x345",
+   "block:x350",
+   "block:x351",
+   "block:x352",
+   "block:x368",
+   "block:x391",
+   "block:x442",
+   "block:x471",
+   "block:x483",
+   "block:x500",
+   "block:x522",
+   "block:x542",
+   "block:x543",
+   "block:x548",
+   "block:x563",
+   "block:x570",
+   "block:x592",
+   "block:x594",
+   "block:x617",
+   "block:x618",
+   "block:x620",
+   "block:x622",
+   "block:x624",
+   "block:x657",
+   "block:x664",
+   "block:x679",
+   "block:x680",
+   "block:x681",
+   "block:x683",
+   "block:x685",
+   "block:x686",
+   "block:x687",
+   "block:x701",
+   "block:x702",
+   "block:x703",
+   "block:x705",
+   "block:x706",
+   "block:x708",
+   "block:x709",
+   "block:x710",
+   "block:x711",
+   "block:x712",
+   "block:x715",
+   "block:x720",
+   "block:x723",
+   "block:x724",
+   "block:x725",
+   "block:x729",
+   "block:x734",
+   "block:x740",
+   "block:x741",
+   "block:x745",
+   "block:x748",
+   "block:x757",
+   "block:x760",
+   "block:x762",
+   "block:x764",
+   "block:x769",
+   "block:x830",
+   "block:x837",
+   "block:x838",
+   "block:x839",
+   "block:x840",
+   "block:x841",
+   "block:x842",
+   "block:x843",
+   "block:x844",
+   "block:x845",
+   "block:x846",
+   "block:x847",
+   "block:x849",
+   "block:x851",
+   "block:x852",
+   "block:x856",
+   "block:x858",
+   "block:x859",
+   "block:x860",
+   "block:x861",
+   "block:x862",
+   "block:x864",
+   "block:x865",
+   "block:x866",
+   "block:x867",
+   "block:x869",
+   "block:x870",
+   "block:x872",
+   "block:x906",
+   "block:x912",
+   "block:x922",
+   "block:x923",
+   "block:x927",
+   "block:x936",
+   "block:x939",
+   "block:x959",
+   "block:x961",
+   "block:x962",
+   "block:x964",
+   "block:x965",
+   "block:x967",
+   "block:x968",
+   "block:x969",
+   "block:x971",
+   "block:x972",
+   "block:x973",
+   "block:x975",
+   "block:x977",
+   "block:x978",
+   "block:x981",
+   "block:x982",
+   "block:x983",
+   "block:x991"
+  ]
+ },
+ {
+  "key": "block:Pn",
+  "number": 53,
+  "symbol": "Pn",
+  "title": "Pipeline News app",
+  "description": "The Pipeline News page itself: boot, engine genome panel, site links and rendering.",
+  "kind": "app",
+  "category": "news",
+  "category_title": "Pipeline News",
+  "state": null,
+  "functions_inside": 24,
+  "function_keys": [
+   "family:975",
+   "family:9027",
+   "family:9028",
+   "family:9032",
+   "family:9035",
+   "family:9039",
+   "family:9040",
+   "family:9051",
+   "family:9052",
+   "family:9053",
+   "family:9054",
+   "family:9055",
+   "family:9056",
+   "family:9057",
+   "family:9058",
+   "family:9059",
+   "family:9060",
+   "family:9061",
+   "family:9062",
+   "family:9063",
+   "family:9064",
+   "family:9065",
+   "family:9066",
+   "family:9067"
+  ],
+  "functions_not_in_numbered_database": [],
+  "repos": [
+   "Ventusltd/data-grid-gb",
+   "Ventusltd/data-gridatlas",
+   "Ventusltd/gridatlas",
+   "Ventusltd/pipelinenews",
+   "Ventusltd/globalgrid2050",
+   "Ventusltd/spiders",
+   "Ventusltd/testcode",
+   "Ventusltd/code-generator",
+   "Ventusltd/ventus-grid-engine"
+  ],
+  "live": [
+   "https://ventusltd.github.io/data-grid-gb/chatgpt/ingest_etys.py",
+   "https://ventusltd.github.io/data-gridatlas/atman/202608291237-verify-live-data-release.py",
+   "https://ventusltd.github.io/data-gridatlas/atman/202608291410-verify-repository-boundary.py",
+   "https://ventusltd.github.io/data-gridatlas/atman/202608291507-current-integrity.py"
+  ],
+  "files": [
+   {
+    "repo": "Ventusltd/data-grid-gb",
+    "path": "chatgpt/ingest_etys.py",
+    "commit": "5181de3423e4fe50c77c568b9f3066c61a1d9e41"
+   },
+   {
+    "repo": "Ventusltd/data-gridatlas",
+    "path": "atman/202608291237-verify-live-data-release.py",
+    "commit": "8bf88da9e210ce9f61dc0398869d3369f3fa2445"
+   },
+   {
+    "repo": "Ventusltd/data-gridatlas",
+    "path": "atman/202608291410-verify-repository-boundary.py",
+    "commit": "8bf88da9e210ce9f61dc0398869d3369f3fa2445"
+   },
+   {
+    "repo": "Ventusltd/data-gridatlas",
+    "path": "atman/202608291507-current-integrity.py",
+    "commit": "8bf88da9e210ce9f61dc0398869d3369f3fa2445"
+   },
+   {
+    "repo": "Ventusltd/data-gridatlas",
+    "path": "compiler/202608291237-materialise-live-data-release.py",
+    "commit": "8bf88da9e210ce9f61dc0398869d3369f3fa2445"
+   },
+   {
+    "repo": "Ventusltd/gridatlas",
+    "path": "atman/202608291239-compare-incumbent-successor.py",
+    "commit": "ece848117a6d21b7fccb232557194877698c48a9"
+   },
+   {
+    "repo": "Ventusltd/gridatlas",
+    "path": "compiler/202608291430-compile-atlas-v9-live.py",
+    "commit": "ece848117a6d21b7fccb232557194877698c48a9"
+   },
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "archive/202608261547-pipelinenews/v1-9-legacy-lessons/uk_renewables_pipeline/v7/scripts/data/build_v7_2_spine.py",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   }
+  ],
+  "first_written": "2026-05-09T22:43:39+01:00",
+  "depends_on": [
+   "block:Pr",
+   "block:Si",
+   "block:Tp",
+   "block:St",
+   "block:Gn",
+   "block:Ss",
+   "block:Wf",
+   "block:Dt",
+   "block:Sa"
+  ],
+  "used_by": [
+   "block:Cg",
+   "block:Sb",
+   "block:St",
+   "block:Wf",
+   "block:Tp",
+   "block:Gn",
+   "block:x406",
+   "block:x499",
+   "block:x548",
+   "block:x618",
+   "block:x619",
+   "block:x652",
+   "block:x662",
+   "block:x838",
+   "block:x839",
+   "block:x840",
+   "block:x841",
+   "block:x842",
+   "block:x843",
+   "block:x844",
+   "block:x845",
+   "block:x846",
+   "block:x847",
+   "block:x858",
+   "block:x859",
+   "block:x860",
+   "block:x861",
+   "block:x862",
+   "block:x864",
+   "block:x865",
+   "block:x866",
+   "block:x867",
+   "block:x869",
+   "block:x899",
+   "block:x900",
+   "block:x901"
+  ]
+ },
+ {
+  "key": "block:Gp",
+  "number": 54,
+  "symbol": "Gp",
+  "title": "Grid proximity panel",
+  "description": "For each pipeline project, how far it is from the grid and from which substation.",
+  "kind": "app",
+  "category": "news",
+  "category_title": "Pipeline News",
+  "state": null,
+  "functions_inside": 24,
+  "function_keys": [
+   "family:75679",
+   "family:75721",
+   "family:75714",
+   "family:75715",
+   "family:75716",
+   "family:75717",
+   "family:75718",
+   "family:75719",
+   "family:75720",
+   "family:75725",
+   "family:75726",
+   "family:75728",
+   "family:75765",
+   "family:75766",
+   "family:75767",
+   "family:75768",
+   "family:75769",
+   "family:75770",
+   "family:75771",
+   "family:75772",
+   "family:75773",
+   "family:75774",
+   "family:75775",
+   "family:75776"
+  ],
+  "functions_not_in_numbered_database": [],
+  "repos": [
+   "Ventusltd/pipelinenews"
+  ],
+  "live": [
+   "https://ventusltd.github.io/pipelinenews/tools/intelligence/cartridges/capacity-range-filter/proof.mjs",
+   "https://ventusltd.github.io/pipelinenews/tools/intelligence/cartridges/grid-distance-column/proof.mjs",
+   "https://ventusltd.github.io/pipelinenews/tools/intelligence/cartridges/table-locality-sort/proof.mjs",
+   "https://ventusltd.github.io/pipelinenews/tools/intelligence/cartridges/grid-distance-column/build_payload.py"
+  ],
+  "files": [
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "tools/intelligence/cartridges/capacity-range-filter/proof.mjs",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   },
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "tools/intelligence/cartridges/grid-distance-column/proof.mjs",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   },
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "tools/intelligence/cartridges/table-locality-sort/proof.mjs",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   },
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "tools/intelligence/cartridges/grid-distance-column/build_payload.py",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   },
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "tools/intelligence/cartridges/grid-distance-column/make_cartridge.py",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   },
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "tools/intelligence/cartridges/grid-proximity/build_payload.py",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   },
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "tools/intelligence/cartridges/grid-proximity/proof.mjs",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   },
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "tools/intelligence/cartridges/grid-proximity/verify_widen.py",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   }
+  ],
+  "first_written": "2026-08-31T16:32:16+01:00",
+  "depends_on": [
+   "block:Ss",
+   "block:Wf"
+  ],
+  "used_by": [
+   "block:Cg"
+  ]
+ },
+ {
+  "key": "block:Wf",
+  "number": 55,
+  "symbol": "Wf",
+  "title": "Wider fleet panel",
+  "description": "The other projects of the same developer, with links into the atlas.",
+  "kind": "app",
+  "category": "news",
+  "category_title": "Pipeline News",
+  "state": null,
+  "functions_inside": 21,
+  "function_keys": [
+   "family:24431",
+   "family:26665",
+   "family:26823",
+   "family:26827",
+   "family:26831",
+   "family:24437",
+   "family:24273",
+   "family:24279",
+   "family:75894",
+   "family:75895",
+   "family:75896",
+   "family:75897",
+   "family:75898",
+   "family:75899",
+   "family:26503",
+   "family:26506",
+   "family:26507",
+   "family:26511",
+   "family:26662",
+   "family:26666",
+   "family:26670"
+  ],
+  "functions_not_in_numbered_database": [],
+  "repos": [
+   "Ventusltd/pipelinenews",
+   "Ventusltd/globalgrid2050"
+  ],
+  "live": [
+   "https://ventusltd.github.io/pipelinenews/tools/intelligence/cartridges/wider-fleet/build_payload.py",
+   "https://globalgrid2050.com/testcode/202609060315/pipeline/assets/202609040044-wider-fleet.mjs",
+   "https://globalgrid2050.com/testcode/202609060316/pipeline/assets/202609040044-wider-fleet.mjs",
+   "https://globalgrid2050.com/testcode/202609060318/pipeline/assets/202609040044-wider-fleet.mjs"
+  ],
+  "files": [
+   {
+    "repo": "Ventusltd/pipelinenews",
+    "path": "tools/intelligence/cartridges/wider-fleet/build_payload.py",
+    "commit": "4980096b57cb35f63ad2d80bded5687beb2a9532"
+   },
+   {
+    "repo": "Ventusltd/globalgrid2050",
+    "path": "testcode/202609060349/pipeline/assets/202609040044-wider-fleet.mjs",
+    "commit": "d3898fab970b56d50a64ee9cc4275ec86cd9416f"
+   }
+  ],
+  "first_written": "2026-09-03T01:10:43+01:00",
+  "depends_on": [
+   "block:St",
+   "block:Tp",
+   "block:Pr",
+   "block:Gn",
+   "block:Pn"
+  ],
+  "used_by": [
+   "block:Ps",
+   "block:Ra",
+   "block:Cg",
+   "block:Sb",
+   "block:Pn",
+   "block:Gp",
+   "block:Tp",
+   "block:x124",
+   "block:x442"
+  ]
+ }
+]
