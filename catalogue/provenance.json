@@ -1,9 +1,9 @@
 {
- "built_utc": "2026-09-15T19:01:52Z",
+ "built_utc": "2026-09-15T19:15:07Z",
  "rule": {
   "elements": "every block of the live register",
   "apps": "register blocks whose kind is app",
-  "functions": "families of the numbered database with more than 10 numbered lines",
+  "functions": "families of the numbered database whose lineCount (line occurrences) is more than 10; first_line and last_line are sequence endpoints, not numeric bounds",
   "surfaces": "folders of the live addresses the register records"
  },
  "register": {

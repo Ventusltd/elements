@@ -7,10 +7,13 @@ Nothing here invents a key. Every key already exists in a published source:
                  (https://ventusltd.github.io/stars/blocks/blocks.json), symbol unique.
                  Blocks whose kind is "app" are the register's defined apps.
   family:<n>     a function: the permanent function number of the numbered database
-                 (families.json, n unique). Catalogued when it holds MORE THAN 10
-                 numbered lines.
+                 (families.json, n unique). Catalogued when its lineCount (line
+                 occurrences) is MORE THAN 10; distinct_lines is reported beside it.
   line:<n>       a numbered line: the permanent line key (all-lines.bin, never reused).
-                 Each function lists its first and last line key.
+                 Each function lists the first and last key OF ITS LINE SEQUENCE. These are
+                 sequence endpoints, not numeric bounds: keys are issued in discovery
+                 order, so the first key is often larger than the last, and a function may
+                 repeat a key. "lines" counts occurrences; "distinct_lines" counts keys.
   surface:<url>  a served surface: the folder of a live address a block records, taken
                  verbatim from the register. The URL is its identity; it is not a new
                  number.
@@ -57,7 +60,10 @@ def u32(b: bytes) -> list[int]:
 
 
 def main() -> int:
-    reg_raw = fetch(REGISTER_URL)
+    # --register <file> rebuilds from a committed register copy instead of the live one,
+    # so a change to the builder can be separated from a change in the register.
+    reg_arg = sys.argv[sys.argv.index("--register") + 1] if "--register" in sys.argv else None
+    reg_raw = (ROOT / reg_arg).read_bytes() if reg_arg else fetch(REGISTER_URL)
     reg = json.loads(reg_raw.decode("utf-8"))
     pack = {n: fetch(PACK_URL + n) for n in PACK_FILES}
     meta = json.loads(pack["all-lines.meta.json"].decode("utf-8"))
@@ -98,8 +104,10 @@ def main() -> int:
         blk = by_sym.get(fam["block"])
         name = fam.get("name")
         title = f"#{n} {name}" if name else f"#{n} (name not yet known)"
-        desc = (f"{fam['kind']} {name or '(name not yet known)'} · {fam['lineCount']} numbered lines, "
-                f"line {keys[0]} to line {keys[-1]} · "
+        distinct = len(set(keys))
+        desc = (f"{fam['kind']} {name or '(name not yet known)'} · {fam['lineCount']} line occurrences, "
+                f"{distinct} distinct line keys · sequence starts at line {keys[0]} and ends at line {keys[-1]} "
+                f"(endpoints of the sequence, not a numeric range) · "
                 + (f"in block {blk['symbol']} {blk['title']}" if blk else f"pack block {fam['block']} (not in the current register)")
                 + f" · found in {fam['repos']} repositories and {fam['files']} files · "
                 + ("self-contained" if fam.get("standalone") else "needs context")
@@ -107,7 +115,8 @@ def main() -> int:
                 + " · description not yet written")
         functions.append({
             "key": f"family:{n}", "title": title, "name": name, "kind": fam["kind"],
-            "lines": fam["lineCount"], "first_line": f"line:{keys[0]}", "last_line": f"line:{keys[-1]}",
+            "lines": fam["lineCount"], "distinct_lines": distinct,
+            "first_line": f"line:{keys[0]}", "last_line": f"line:{keys[-1]}",
             "block": f"block:{fam['block']}", "block_in_register": bool(blk),
             "category": fam.get("category"), "repos": fam["repos"], "files": fam["files"],
             "standalone": bool(fam.get("standalone")), "first_written": fam.get("first_written"),
@@ -159,7 +168,7 @@ def main() -> int:
     provenance = {
         "built_utc": now,
         "rule": {"elements": "every block of the live register", "apps": "register blocks whose kind is app",
-                 "functions": f"families of the numbered database with more than {MIN_LINES_EXCLUSIVE} numbered lines",
+                 "functions": f"families of the numbered database whose lineCount (line occurrences) is more than {MIN_LINES_EXCLUSIVE}; first_line and last_line are sequence endpoints, not numeric bounds",
                  "surfaces": "folders of the live addresses the register records"},
         "register": {"url": REGISTER_URL, "generated_utc": reg.get("generated_utc"), "sha256": sha(reg_raw),
                      "bytes": len(reg_raw), "copy": f"inputs/{reg_name}"},
@@ -194,7 +203,9 @@ def write_markdown(prov, elements, apps, surfaces, functions) -> None:
           f"| elements (register blocks) | `block:<Sym>` | {c['elements']} |",
           f"| apps (blocks of kind app) | `block:<Sym>` | {c['apps']} |",
           f"| served surfaces | `surface:<url>` | {c['surfaces']} |",
-          f"| functions over 10 lines | `family:<n>` | {c['functions_over_10_lines']} of {c['families_total']} |", "",
+          f"| functions over 10 line occurrences | `family:<n>` | {c['functions_over_10_lines']} of {c['families_total']} |", "",
+          "A function's first and last line keys are the ends of its line sequence, not a numeric range. "
+          "Line occurrences count repeats; distinct lines count keys.", "",
           "- [Apps](APPS.md)", "- [Elements](ELEMENTS.md)", "- [Served surfaces](SURFACES.md)",
           "- Functions, by category: " + ", ".join(
               f"[{cat}](functions/{cat}.md)" for cat in sorted({f['category'] or 'other' for f in functions})), ""]
@@ -222,9 +233,9 @@ def write_markdown(prov, elements, apps, surfaces, functions) -> None:
         by_cat[f["category"] or "other"].append(f)
     for cat, rows in by_cat.items():
         t = [f"# Functions over 10 lines · {cat}\n", head, f"{len(rows)} functions.\n",
-             "| key | title | lines | first line | last line | block | description |", "|---|---|---|---|---|---|---|"]
+             "| key | title | line occurrences | distinct lines | sequence starts | sequence ends | block | description |", "|---|---|---|---|---|---|---|---|"]
         for f in sorted(rows, key=lambda r: int(r["key"].split(":")[1])):
-            t.append(f"| `{f['key']}` | {cell(f['title'])} | {f['lines']} | `{f['first_line']}` | `{f['last_line']}` | "
+            t.append(f"| `{f['key']}` | {cell(f['title'])} | {f['lines']} | {f['distinct_lines']} | `{f['first_line']}` | `{f['last_line']}` | "
                      f"`{f['block']}` | {cell(f['description'])} |")
         (fdir / f"{cat}.md").write_text("\n".join(t) + "\n", encoding="utf-8")
 
