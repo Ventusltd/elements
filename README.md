@@ -22,11 +22,11 @@ Titles and descriptions are the sources' own words. Where a source has none, the
 
 - Rebuild with `python build/build_catalogue.py`. Add `--register inputs/<file>` to rebuild from a committed register copy.
 
-Check with `python tests/check_catalogue.py`. It rebuilds every row independently from the pinned inputs, and every committed row must equal its rebuilt row field for field: functions, elements, apps and surfaces. The provenance counts must match too, and every line key in each catalogued function's sequence must be issued. Before the real catalogue may pass, 26 deliberately broken copies must each fail.
+Check with `python tests/check_catalogue.py`. It rebuilds every row independently from the pinned inputs, and every committed row must equal its rebuilt row field for field, with the same JSON types: functions, elements, apps and surfaces. All provenance counts, and the register's generated time and byte length, must match too, and every line key in each catalogued function's sequence must be issued. Before the real catalogue may pass, 33 deliberately broken copies must each fail.
 
 What the check does not prove:
 - that the register or the numbered database is right;
-- that the register's `depends_on` and `used_by` edges are real. They are copied as the register states them. 109 of those references name blocks the register does not hold, and the check prints them rather than hiding them;
+- that the register's `depends_on` and `used_by` edges are real. They are copied as the register states them. 399 register references from 17 blocks name 109 distinct target blocks the register does not hold, all of them in used_by, and the check prints them rather than hiding them;
 - that keys were never reused in the past;
 - that any surface is live or any function runs.
 

@@ -17,7 +17,9 @@ no missing fields:
   against families.json);
 - apps: exactly the element rows of kind app, whole rows;
 - surfaces: key, url, title, description, blocks;
-- provenance counts.
+- provenance: every count (elements, apps, surfaces, families_total,
+  functions_over_10_lines, numbered_lines, highest_line_key) and the register's
+  generated_utc and byte length, all with the same JSON types.
 It also requires every line key of every catalogued function's sequence to be issued.
 
 WHAT THIS DOES NOT PROVE. That the register or the numbered database are right;
@@ -101,8 +103,23 @@ def expected_rows(register, families, fam_lines):
     surfs = [{"key": f"surface:{u}", "url": u, "title": u.split("://", 1)[-1],
               "description": f"served folder recorded as the live address of {len(s)} register blocks",
               "blocks": [f"block:{x}" for x in sorted(s)]} for u, s in sorted(surf.items())]
-    dangling = sorted({r for e in elems for r in e["depends_on"] + e["used_by"] if r not in {x["key"] for x in elems}})
+    known = {x["key"] for x in elems}
+    refs = [(e["key"], field, r) for e in elems for field in ("depends_on", "used_by") for r in e[field] if r not in known]
+    dangling = {"references": len(refs), "source_blocks": len({s for s, _, _ in refs}),
+                "distinct_targets": sorted({r for _, _, r in refs}),
+                "by_field": {f: sum(1 for _, g, _ in refs if g == f) for f in ("depends_on", "used_by")}}
     return {"functions": funcs, "elements": elems, "apps": apps, "surfaces": surfs}, dangling
+
+
+def same(a, b):
+    """Equality that also requires the same JSON type: True is not 1, 0 is not False."""
+    if type(a) is not type(b):
+        return False
+    if isinstance(a, dict):
+        return a.keys() == b.keys() and all(same(a[k], b[k]) for k in a)
+    if isinstance(a, list):
+        return len(a) == len(b) and all(same(x, y) for x, y in zip(a, b))
+    return a == b
 
 
 def problems(cat, prov, exp, keyset):
@@ -124,13 +141,19 @@ def problems(cat, prov, exp, keyset):
         if extra or missing:
             bad.append(f"{part}: {len(extra)} extra keys, {len(missing)} missing keys")
         for k in set(got) & set(want):
-            if got[k] != want[k]:
-                fields = sorted(f for f in set(got[k]) | set(want[k]) if got[k].get(f, object()) != want[k].get(f, object()))
+            if not same(got[k], want[k]):
+                fields = sorted(f for f in set(got[k]) | set(want[k]) if not same(got[k].get(f), want[k].get(f)) or (f in got[k]) != (f in want[k]))
                 bad.append(f"{part} {k}: fields differ from the recomputed row: {fields}")
     for r in exp["functions"]:
         if any(key not in keyset for key in r["_sequence"]):
             bad.append(f"{r['key']}: a line key in its sequence is not issued")
     c = dict(prov["counts"])
+    for field, want in exp["_counts"].items():
+        if not same(c.get(field), want):
+            bad.append(f"provenance counts.{field} is {c.get(field)!r}, recomputed {want!r}")
+    for field, want in exp["_register"].items():
+        if not same(prov["register"].get(field), want):
+            bad.append(f"provenance register.{field} is {prov['register'].get(field)!r}, recomputed {want!r}")
     if "_apps_count" in cat:
         c["apps"] = cat["_apps_count"]
     if (c["elements"], c["apps"], c["surfaces"], c["functions_over_10_lines"]) != \
@@ -153,7 +176,15 @@ def main():
         pack[src["url"].rsplit("/", 1)[1]] = b
     u32 = lambda b: list(struct.unpack(f"<{len(b)//4}I", b))
     keyset = set(u32(pack["all-lines.bin"]))
-    exp, dangling = expected_rows(register, json.loads(pack["families.json"]), u32(pack["lines.bin"]))
+    families = json.loads(pack["families.json"])
+    meta = json.loads(pack["all-lines.meta.json"])
+    exp, dangling = expected_rows(register, families, u32(pack["lines.bin"]))
+    exp["_counts"] = {"elements": len(exp["elements"]), "apps": len(exp["apps"]), "surfaces": len(exp["surfaces"]),
+                      "families_total": len(families), "functions_over_10_lines": len(exp["functions"]),
+                      "numbered_lines": meta["lines"], "highest_line_key": meta["max"]}
+    if meta["lines"] != len(keyset) or meta["max"] != max(keyset):
+        sys.exit("all-lines.meta.json disagrees with all-lines.bin")
+    exp["_register"] = {"generated_utc": register.get("generated_utc"), "bytes": len(reg_bytes)}
     cat = {k: load(f"catalogue/{k}.json") for k in ("elements", "apps", "surfaces", "functions")}
 
     def set_field(part, i, field, value):
@@ -185,22 +216,38 @@ def main():
         ("surface description invented", set_field("surfaces", 0, "description", "invented")),
         ("surface key replaced by an unrelated URL", set_field("surfaces", 0, "key", "surface:https://example.test/other/")),
         ("fake key prefix", lambda c: c["surfaces"][0].__setitem__("key", "planet:" + c["surfaces"][0]["key"])),
+        ("block_in_register True turned into 1", lambda c: c["functions"][0].__setitem__("block_in_register", int(c["functions"][0]["block_in_register"]))),
+        ("standalone False turned into 0", lambda c: c["functions"][next(i for i, f in enumerate(c["functions"]) if f["standalone"] is False)].__setitem__("standalone", 0)),
         ("invented surface", lambda c: c["surfaces"].append({"key": "surface:https://example.invalid/", "url": "https://example.invalid/", "title": "x", "description": "x", "blocks": []})),
+    ]
+    prov_mutations = [
+        ("families_total raised", lambda p: p["counts"].__setitem__("families_total", p["counts"]["families_total"] + 1)),
+        ("numbered_lines raised", lambda p: p["counts"].__setitem__("numbered_lines", p["counts"]["numbered_lines"] + 1)),
+        ("highest_line_key raised", lambda p: p["counts"].__setitem__("highest_line_key", p["counts"]["highest_line_key"] + 1)),
+        ("register generated_utc changed", lambda p: p["register"].__setitem__("generated_utc", "2000-01-01T00:00:00Z")),
+        ("register bytes changed", lambda p: p["register"].__setitem__("bytes", p["register"]["bytes"] + 1)),
     ]
     for name, mutate in mutations:
         broken = copy.deepcopy(cat)
         mutate(broken)
         if not problems(broken, prov, exp, keyset):
             sys.exit(f"a broken copy passed ({name}); the check proves nothing until it fails")
-    print(f"{len(mutations)} broken copies each fail as required")
+    for name, mutate in prov_mutations:
+        broken_prov = copy.deepcopy(prov)
+        mutate(broken_prov)
+        if not problems(cat, broken_prov, exp, keyset):
+            sys.exit(f"a broken provenance passed ({name}); the check proves nothing until it fails")
+    print(f"{len(mutations) + len(prov_mutations)} broken copies each fail as required")
 
     bad = problems(cat, prov, exp, keyset)
     if bad:
         sys.exit("catalogue check FAILED:\n- " + "\n- ".join(bad[:40]))
     print(f"catalogue check PASS: complete rows equal the recomputed rows; {len(cat['elements'])} elements, "
           f"{len(cat['apps'])} apps, {len(cat['surfaces'])} surfaces, {len(cat['functions'])} functions")
-    print(f"disclosed, not failed: {len(dangling)} register depends_on/used_by references name blocks the register "
-          f"does not hold" + (f": {', '.join(dangling[:12])}" if dangling else ""))
+    d = dangling
+    print(f"disclosed, not failed: {d['references']} register references from {d['source_blocks']} blocks name "
+          f"{len(d['distinct_targets'])} distinct targets absent from this register "
+          f"(depends_on {d['by_field']['depends_on']}, used_by {d['by_field']['used_by']})")
 
 
 if __name__ == "__main__":
