@@ -3,21 +3,31 @@
 
 Run from the repository root:  python tests/check_catalogue.py
 
-What this proves, and only this: every entry in catalogue/*.json equals what this
-file recomputes, independently of the builder, from the pinned register copy and
-the pinned numbered database. It recomputes each function's key, name, kind, line
-occurrences, distinct lines, sequence start and end keys and block from
-families.json and lines.bin; each element's title, description, kind, category and
-function keys from the register; the apps as the blocks of kind app; the surfaces
-from the register's live addresses. Missing entries, extra entries and any changed
-field fail.
+WHAT THIS PROVES. This file builds, independently of the builder, the complete row
+for every entry from the pinned register copy and the pinned numbered database, and
+requires each committed row to equal it exactly, field for field, with no extra and
+no missing fields:
+- functions: key, title, name, kind, lines, distinct_lines, first_line, last_line,
+  block, block_in_register, category, repos, files, standalone, first_written,
+  named_by_register_blocks, description (every value derived from families.json,
+  lines.bin and the register);
+- elements: key, number, symbol, title, description, kind, category, category_title,
+  state, functions_inside, function_keys, functions_not_in_numbered_database, repos,
+  live, files, first_written, depends_on, used_by (from the register; membership
+  against families.json);
+- apps: exactly the element rows of kind app, whole rows;
+- surfaces: key, url, title, description, blocks;
+- provenance counts.
+It also requires every line key of every catalogued function's sequence to be issued.
 
-It does not prove the sources are right, that descriptions are complete, or that a
-function runs.
+WHAT THIS DOES NOT PROVE. That the register or the numbered database are right;
+that the register's depends_on and used_by edges are real (they are copied as the
+register states them, and references to blocks the register does not hold are
+counted and printed, not hidden); that keys were never reused historically; that
+any surface is live or any function runs.
 
-Before the real catalogue may pass, twenty deliberately broken copies must each
-fail, including every corruption a peer review showed the earlier seven-check
-version let through.
+Before the real catalogue may pass, every deliberately broken copy below must fail,
+including each unchecked-field case a peer review found.
 """
 import copy, hashlib, json, struct, sys, urllib.request
 from collections import defaultdict
@@ -27,70 +37,101 @@ ROOT = Path(__file__).resolve().parent.parent
 load = lambda p: json.loads((ROOT / p).read_text(encoding="utf-8"))
 
 
-def expected(register, families, fam_lines):
+def expected_rows(register, families, fam_lines):
     blocks = register["blocks"]
-    exp_f = {}
+    by_sym = {b["symbol"]: b for b in blocks}
+    cat_title = {c.get("id"): c.get("title") or c.get("id") for c in register.get("categories", []) if isinstance(c, dict)}
+    named_by = defaultdict(list)
+    for b in blocks:
+        for fn in b.get("inside") or []:
+            named_by[fn["family"]].append(b["symbol"])
+
+    funcs = []
     for fam in families:
         if fam["lineCount"] <= 10:
             continue
+        n, name = fam["n"], fam.get("name")
         seq = fam_lines[fam["lineOffset"]: fam["lineOffset"] + fam["lineCount"]]
-        exp_f[f"family:{fam['n']}"] = {
-            "name": fam.get("name"), "kind": fam["kind"], "lines": fam["lineCount"], "distinct_lines": len(set(seq)),
-            "first_line": f"line:{seq[0]}", "last_line": f"line:{seq[-1]}", "block": f"block:{fam['block']}",
-        }
-    exp_e = {f"block:{b['symbol']}": {
-        "title": b["title"], "kind": b["kind"], "category": b["category"],
-        "description": b.get("description") or "description not yet written",
-        "function_keys": [f"family:{x['family']}" for x in b.get("inside") or []],
-    } for b in blocks}
-    exp_apps = sorted(f"block:{b['symbol']}" for b in blocks if b["kind"] == "app")
+        if fam["lineOffset"] < 0 or fam["lineOffset"] + fam["lineCount"] > len(fam_lines) or len(seq) != fam["lineCount"]:
+            raise SystemExit(f"family {n} points outside lines.bin")
+        blk = by_sym.get(fam["block"])
+        distinct = len(set(seq))
+        desc = (f"{fam['kind']} {name or '(name not yet known)'} · {fam['lineCount']} line occurrences, "
+                f"{distinct} distinct line keys · sequence starts at line {seq[0]} and ends at line {seq[-1]} "
+                f"(endpoints of the sequence, not a numeric range) · "
+                + (f"in block {blk['symbol']} {blk['title']}" if blk else f"pack block {fam['block']} (not in the current register)")
+                + f" · found in {fam['repos']} repositories and {fam['files']} files · "
+                + ("self-contained" if fam.get("standalone") else "needs context")
+                + (f" · first written {fam['first_written']}" if fam.get("first_written") else "")
+                + " · description not yet written")
+        funcs.append({
+            "key": f"family:{n}", "title": f"#{n} {name}" if name else f"#{n} (name not yet known)", "name": name,
+            "kind": fam["kind"], "lines": fam["lineCount"], "distinct_lines": distinct,
+            "first_line": f"line:{seq[0]}", "last_line": f"line:{seq[-1]}",
+            "block": f"block:{fam['block']}", "block_in_register": bool(blk), "category": fam.get("category"),
+            "repos": fam["repos"], "files": fam["files"], "standalone": bool(fam.get("standalone")),
+            "first_written": fam.get("first_written"),
+            "named_by_register_blocks": [f"block:{s}" for s in named_by.get(n, [])], "description": desc,
+            "_sequence": seq,
+        })
+
+    pack_ids = {f["n"] for f in families}
+    sym = lambda d: d["symbol"] if isinstance(d, dict) else d
+    elems = []
+    for b in blocks:
+        inside = b.get("inside") or []
+        elems.append({
+            "key": f"block:{b['symbol']}", "number": b["number"], "symbol": b["symbol"], "title": b["title"],
+            "description": b.get("description") or "description not yet written", "kind": b["kind"],
+            "category": b["category"], "category_title": cat_title.get(b["category"], b["category"]),
+            "state": b.get("state"), "functions_inside": len(inside),
+            "function_keys": [f"family:{fn['family']}" for fn in inside],
+            "functions_not_in_numbered_database": [f"family:{fn['family']}" for fn in inside if fn["family"] not in pack_ids],
+            "repos": b.get("repos") or [], "live": b.get("live") or [],
+            "files": [{"repo": f["repo"], "path": f["path"], "commit": f.get("commit")} for f in b.get("files") or []],
+            "first_written": b.get("first_written"),
+            "depends_on": [f"block:{sym(d)}" for d in b.get("depends_on") or []],
+            "used_by": [f"block:{sym(d)}" for d in b.get("used_by") or []],
+        })
+    apps = [e for e in elems if e["kind"] == "app"]
     surf = defaultdict(set)
     for b in blocks:
         for u in b.get("live") or []:
-            surf[u.rsplit("/", 1)[0] + "/"].add(f"block:{b['symbol']}")
-    exp_s = {f"surface:{u}": sorted(v) for u, v in surf.items()}
-    return exp_f, exp_e, exp_apps, exp_s
+            surf[u.rsplit("/", 1)[0] + "/"].add(b["symbol"])
+    surfs = [{"key": f"surface:{u}", "url": u, "title": u.split("://", 1)[-1],
+              "description": f"served folder recorded as the live address of {len(s)} register blocks",
+              "blocks": [f"block:{x}" for x in sorted(s)]} for u, s in sorted(surf.items())]
+    dangling = sorted({r for e in elems for r in e["depends_on"] + e["used_by"] if r not in {x["key"] for x in elems}})
+    return {"functions": funcs, "elements": elems, "apps": apps, "surfaces": surfs}, dangling
 
 
 def problems(cat, prov, exp, keyset):
-    exp_f, exp_e, exp_apps, exp_s = exp
     bad = []
-    keys = [x["key"] for x in cat["elements"]] + [x["key"] for x in cat["functions"]] + [x["key"] for x in cat["surfaces"]]
+    keys = [x["key"] for part in ("elements", "functions", "surfaces") for x in cat[part]]
     if len(keys) != len(set(keys)):
         bad.append("a key appears more than once")
-    for x in keys:
-        if not (x.startswith("block:") or x.startswith("family:") or x.startswith("surface:")):
-            bad.append(f"unknown key prefix: {x}")
-    got_f = {f["key"]: f for f in cat["functions"]}
-    if set(got_f) != set(exp_f):
-        bad.append(f"function keys differ: {len(set(got_f) - set(exp_f))} extra, {len(set(exp_f) - set(got_f))} missing")
-    for k, e in exp_f.items():
-        g = got_f.get(k)
-        if not g:
-            continue
-        for field, want in e.items():
-            if g.get(field) != want:
-                bad.append(f"{k}.{field} is {g.get(field)!r}, recomputed {want!r}")
-    got_e = {e["key"]: e for e in cat["elements"]}
-    if set(got_e) != set(exp_e):
-        bad.append(f"element keys differ: {len(set(got_e) - set(exp_e))} extra, {len(set(exp_e) - set(got_e))} missing")
-    for k, e in exp_e.items():
-        g = got_e.get(k)
-        if g:
-            for field, want in e.items():
-                if g.get(field) != want:
-                    bad.append(f"{k}.{field} differs from the register")
-    got_apps = [a["key"] for a in cat["apps"]]
-    if sorted(got_apps) != exp_apps:
-        bad.append(f"apps are {sorted(got_apps)}, register kind app gives {exp_apps}")
-    for a in cat["apps"]:
-        if a != got_e.get(a["key"]):
-            bad.append(f"app {a['key']} differs from its element entry")
-    got_s = {s["key"]: sorted(s["blocks"]) for s in cat["surfaces"]}
-    if got_s != exp_s:
-        bad.append(f"surfaces differ: {len(set(got_s) - set(exp_s))} extra, {len(set(exp_s) - set(got_s))} missing, or blocks changed")
+    for part in ("functions", "elements", "apps", "surfaces"):
+        want = {r["key"]: {k: v for k, v in r.items() if not k.startswith("_")} for r in exp[part]}
+        got_list = cat[part]
+        got = {}
+        for r in got_list:
+            if r.get("key") in got:
+                bad.append(f"{part}: {r.get('key')} listed twice")
+            got[r.get("key")] = r
+        if len(got_list) != len(exp[part]):
+            bad.append(f"{part}: {len(got_list)} rows, recomputed {len(exp[part])}")
+        extra, missing = set(got) - set(want), set(want) - set(got)
+        if extra or missing:
+            bad.append(f"{part}: {len(extra)} extra keys, {len(missing)} missing keys")
+        for k in set(got) & set(want):
+            if got[k] != want[k]:
+                fields = sorted(f for f in set(got[k]) | set(want[k]) if got[k].get(f, object()) != want[k].get(f, object()))
+                bad.append(f"{part} {k}: fields differ from the recomputed row: {fields}")
+    for r in exp["functions"]:
+        if any(key not in keyset for key in r["_sequence"]):
+            bad.append(f"{r['key']}: a line key in its sequence is not issued")
     c = dict(prov["counts"])
-    if "_apps_count" in cat:   # a mutated copy whose provenance app count was raised to match
+    if "_apps_count" in cat:
         c["apps"] = cat["_apps_count"]
     if (c["elements"], c["apps"], c["surfaces"], c["functions_over_10_lines"]) != \
             (len(cat["elements"]), len(cat["apps"]), len(cat["surfaces"]), len(cat["functions"])):
@@ -112,33 +153,39 @@ def main():
         pack[src["url"].rsplit("/", 1)[1]] = b
     u32 = lambda b: list(struct.unpack(f"<{len(b)//4}I", b))
     keyset = set(u32(pack["all-lines.bin"]))
-    exp = expected(register, json.loads(pack["families.json"]), u32(pack["lines.bin"]))
+    exp, dangling = expected_rows(register, json.loads(pack["families.json"]), u32(pack["lines.bin"]))
     cat = {k: load(f"catalogue/{k}.json") for k in ("elements", "apps", "surfaces", "functions")}
 
-    f0 = cat["functions"][0]
-    other_key = next(k for k in sorted(keyset) if f"line:{k}" != f0["first_line"])
+    def set_field(part, i, field, value):
+        return lambda c: c[part][i].__setitem__(field, value)
+    ra = next(i for i, e in enumerate(cat["elements"]) if e["kind"] == "app")
     mutations = [
         ("duplicate key", lambda c: c["functions"][1].__setitem__("key", c["functions"][0]["key"])),
-        ("first line replaced by another issued key", lambda c: c["functions"][0].__setitem__("first_line", f"line:{other_key}")),
-        ("line count changed", lambda c: c["functions"][2].__setitem__("lines", c["functions"][2]["lines"] + 1)),
-        ("distinct line count changed", lambda c: c["functions"][2].__setitem__("distinct_lines", 1)),
-        ("fake key prefix", lambda c: c["surfaces"][0].__setitem__("key", "planet:" + c["surfaces"][0]["key"])),
-        ("invented surface", lambda c: c["surfaces"].append({"key": "surface:https://example.invalid/", "blocks": []})),
-        ("unknown family added", lambda c: c["functions"].append({**c["functions"][0], "key": "family:99999999"})),
-        ("unknown block added", lambda c: c["elements"].append({**c["elements"][0], "key": "block:ZZZ"})),
-        ("duplicate app with matching tally", lambda c: c["apps"].__setitem__(1, c["apps"][0])),
-        ("function dropped with matching tally", lambda c: (c["functions"].pop(), None)),
-        ("element description changed", lambda c: c["elements"][0].__setitem__("description", "invented")),
-        # the exact cases a peer review found passing the earlier seven checks
-        ("a foreign but issued first key", lambda c: c["functions"][0].__setitem__("first_line", "line:342795")),
-        ("a false last key", lambda c: c["functions"][0].__setitem__("last_line", "line:27")),
+        ("a foreign but issued first key", set_field("functions", 0, "first_line", "line:342795")),
+        ("a false last key", set_field("functions", 0, "last_line", "line:27")),
         ("occurrences inflated", lambda c: c["functions"][0].__setitem__("lines", c["functions"][0]["lines"] + 100)),
+        ("distinct lines changed", set_field("functions", 2, "distinct_lines", 1)),
         ("first key with a fake namespace", lambda c: c["functions"][0].__setitem__("first_line", "fake:" + c["functions"][0]["first_line"][5:])),
-        ("function points at an unknown block", lambda c: c["functions"][0].__setitem__("block", "block:NOPE")),
-        ("element lists family:0", lambda c: c["elements"][0].__setitem__("function_keys", ["family:0"])),
-        ("surface key replaced by an unrelated URL", lambda c: c["surfaces"][0].__setitem__("key", "surface:https://example.test/other/")),
-        ("invented app prose", lambda c: c["apps"][0].__setitem__("description", "invented prose")),
+        ("function points at an unknown block", set_field("functions", 0, "block", "block:NOPE")),
+        ("function description invented", set_field("functions", 0, "description", "invented")),
+        ("function category invented", set_field("functions", 0, "category", "invented")),
+        ("block_in_register inverted", lambda c: c["functions"][0].__setitem__("block_in_register", not c["functions"][0]["block_in_register"])),
+        ("unknown family added", lambda c: c["functions"].append({**c["functions"][0], "key": "family:99999999"})),
+        ("function dropped", lambda c: c["functions"].pop()),
+        ("element lists family:0", set_field("elements", 0, "function_keys", ["family:0"])),
+        ("element description changed", set_field("elements", 0, "description", "invented")),
+        ("element depends_on invented", set_field("elements", 0, "depends_on", ["block:DOES-NOT-EXIST"])),
+        ("element live invented", set_field("elements", 0, "live", ["https://example.invalid/"])),
+        ("element files invented", set_field("elements", 0, "files", [{"repo": "example/invalid", "path": "invented.js", "commit": None}])),
+        ("unknown block added", lambda c: c["elements"].append({**c["elements"][0], "key": "block:ZZZ"})),
+        ("invented app prose", set_field("apps", 0, "description", "invented prose")),
+        ("invented app title", set_field("apps", 0, "title", "invented title")),
         ("duplicate app with provenance count raised to match", lambda c: (c["apps"].append(c["apps"][0]), c.__setitem__("_apps_count", len(c["apps"])))),
+        ("surface URL changed, key kept", set_field("surfaces", 0, "url", "https://example.invalid/")),
+        ("surface description invented", set_field("surfaces", 0, "description", "invented")),
+        ("surface key replaced by an unrelated URL", set_field("surfaces", 0, "key", "surface:https://example.test/other/")),
+        ("fake key prefix", lambda c: c["surfaces"][0].__setitem__("key", "planet:" + c["surfaces"][0]["key"])),
+        ("invented surface", lambda c: c["surfaces"].append({"key": "surface:https://example.invalid/", "url": "https://example.invalid/", "title": "x", "description": "x", "blocks": []})),
     ]
     for name, mutate in mutations:
         broken = copy.deepcopy(cat)
@@ -150,8 +197,10 @@ def main():
     bad = problems(cat, prov, exp, keyset)
     if bad:
         sys.exit("catalogue check FAILED:\n- " + "\n- ".join(bad[:40]))
-    print(f"catalogue check PASS: every field recomputed from the pinned inputs; {len(cat['elements'])} elements, "
+    print(f"catalogue check PASS: complete rows equal the recomputed rows; {len(cat['elements'])} elements, "
           f"{len(cat['apps'])} apps, {len(cat['surfaces'])} surfaces, {len(cat['functions'])} functions")
+    print(f"disclosed, not failed: {len(dangling)} register depends_on/used_by references name blocks the register "
+          f"does not hold" + (f": {', '.join(dangling[:12])}" if dangling else ""))
 
 
 if __name__ == "__main__":
